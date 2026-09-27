@@ -6,8 +6,8 @@
 class GitHubSync {
   constructor() {
     this.tokenKey = "cp_github_pat";
-    this.repoKey = "cp_github_target_repo";
-    this.defaultRepo = "competitive-programming";
+    this.repoKey = "cp_github_repo";
+    this.defaultRepo = "cp-mastery-hub";
     this.owner = "baadaldev";
   }
 
@@ -25,6 +25,11 @@ class GitHubSync {
 
   setTargetRepo(repoName) {
     localStorage.setItem(this.repoKey, repoName.trim());
+  }
+
+  setCredentials(token, repoName) {
+    if (token) this.setToken(token);
+    if (repoName) this.setTargetRepo(repoName);
   }
 
   async checkOrCreateRepo(token, repoName) {
@@ -47,7 +52,7 @@ class GitHubSync {
         headers,
         body: JSON.stringify({
           name: repoName,
-          description: "⚔️ Competitive Programming and Data Structures & Algorithms Solutions automatically synced from CP Mastery Hub.",
+          description: "Competitive Programming and DSA Solutions synced from CP Mastery Hub.",
           private: false,
           auto_init: true
         })
@@ -59,10 +64,17 @@ class GitHubSync {
     }
   }
 
+  async pushFile(filename, content, commitMessage) {
+    return this.pushCode({ filename, content, commitMessage });
+  }
+
   async pushCode({ filename, content, commitMessage }) {
     const token = this.getToken();
     if (!token) {
-      throw new Error("GitHub Personal Access Token is required. Please set it in GitHub Sync Settings.");
+      return {
+        success: false,
+        error: "Authentication token missing. Please set your GitHub Token in settings."
+      };
     }
 
     const repoName = this.getTargetRepo();
@@ -72,53 +84,64 @@ class GitHubSync {
       "Content-Type": "application/json"
     };
 
-    // Ensure repo exists
-    await this.checkOrCreateRepo(token, repoName);
-
-    // Check if file already exists to get its SHA for update
-    let existingSha = null;
     try {
-      const getFileRes = await fetch(
+      // Ensure repo exists
+      await this.checkOrCreateRepo(token, repoName);
+
+      // Check if file already exists to get its SHA for update
+      let existingSha = null;
+      try {
+        const getFileRes = await fetch(
+          `https://api.github.com/repos/${this.owner}/${repoName}/contents/${filename}`,
+          { headers }
+        );
+        if (getFileRes.status === 200) {
+          const fileData = await getFileRes.json();
+          existingSha = fileData.sha;
+        }
+      } catch (e) {}
+
+      // Encode content to Base64 (Unicode safe)
+      const base64Content = btoa(unescape(encodeURIComponent(content)));
+
+      const bodyData = {
+        message: commitMessage || `feat: add solution for ${filename}`,
+        content: base64Content
+      };
+      if (existingSha) {
+        bodyData.sha = existingSha;
+      }
+
+      const putRes = await fetch(
         `https://api.github.com/repos/${this.owner}/${repoName}/contents/${filename}`,
-        { headers }
+        {
+          method: "PUT",
+          headers,
+          body: JSON.stringify(bodyData)
+        }
       );
-      if (getFileRes.status === 200) {
-        const fileData = await getFileRes.json();
-        existingSha = fileData.sha;
+
+      if (!putRes.ok) {
+        const err = await putRes.json();
+        return {
+          success: false,
+          error: err.message || "Failed to commit file to GitHub."
+        };
       }
-    } catch (e) {}
 
-    // Encode content to Base64 (Unicode safe)
-    const base64Content = btoa(unescape(encodeURIComponent(content)));
-
-    const bodyData = {
-      message: commitMessage || `feat: add solution for ${filename}`,
-      content: base64Content
-    };
-    if (existingSha) {
-      bodyData.sha = existingSha;
+      const resJson = await putRes.json();
+      return {
+        success: true,
+        commitUrl: resJson.commit?.html_url || `https://github.com/${this.owner}/${repoName}`,
+        filePath: resJson.content?.path || filename,
+        repoName: repoName
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: err.message || "Network or API request failed."
+      };
     }
-
-    const putRes = await fetch(
-      `https://api.github.com/repos/${this.owner}/${repoName}/contents/${filename}`,
-      {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(bodyData)
-      }
-    );
-
-    if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || "Failed to commit file to GitHub.");
-    }
-
-    const resJson = await putRes.json();
-    return {
-      commitUrl: resJson.commit?.html_url || `https://github.com/${this.owner}/${repoName}`,
-      filePath: resJson.content?.path || filename,
-      repoName: repoName
-    };
   }
 }
 
