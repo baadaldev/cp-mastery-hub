@@ -108,11 +108,54 @@ if __name__ == "__main__":
 };
 
 // Global App State
-let currentActiveChapter = null;
+let currentActiveChapter = "ch-01"; // Open Chapter 1 by default so content is instantly visible!
 let currentTierFilter = "all";
 let currentStatusFilter = "all";
 let currentSearchQuery = "";
 let currentNoteProblemId = null;
+
+// Safe data getters
+function getRoadmapData() {
+  if (typeof window !== 'undefined' && window.CP_ROADMAP_DATA && window.CP_ROADMAP_DATA.length > 0) {
+    return window.CP_ROADMAP_DATA;
+  }
+  if (typeof CP_ROADMAP_DATA !== 'undefined' && CP_ROADMAP_DATA.length > 0) {
+    return CP_ROADMAP_DATA;
+  }
+  return [];
+}
+
+function getPatternsData() {
+  if (typeof window !== 'undefined' && window.CP_PATTERNS_DATA && window.CP_PATTERNS_DATA.length > 0) {
+    return window.CP_PATTERNS_DATA;
+  }
+  if (typeof CP_PATTERNS_DATA !== 'undefined' && CP_PATTERNS_DATA.length > 0) {
+    return CP_PATTERNS_DATA;
+  }
+  return [];
+}
+
+function findChapterById(chId) {
+  const data = getRoadmapData();
+  for (const tier of data) {
+    for (const ch of tier.chapters) {
+      if (ch.id === chId) return ch;
+    }
+  }
+  return null;
+}
+
+function findProblemById(probId) {
+  const data = getRoadmapData();
+  for (const tier of data) {
+    for (const ch of tier.chapters) {
+      for (const p of ch.problems) {
+        if (p.id === probId) return { problem: p, chapter: ch };
+      }
+    }
+  }
+  return null;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Initialize Lucide Icons
@@ -233,7 +276,8 @@ function setupRoadmapControls() {
 
 function renderRoadmapCurriculum() {
   const container = document.getElementById("roadmap-chapters-container");
-  if (!container || !window.CP_ROADMAP_DATA) return;
+  const roadmapData = getRoadmapData();
+  if (!container || !roadmapData || roadmapData.length === 0) return;
 
   const solvedMap = JSON.parse(localStorage.getItem("cp_solved_problems") || "{}");
   const starredMap = JSON.parse(localStorage.getItem("cp_starred_problems") || "{}");
@@ -242,7 +286,7 @@ function renderRoadmapCurriculum() {
   let html = "";
   let totalChaptersRendered = 0;
 
-  CP_ROADMAP_DATA.forEach(tier => {
+  roadmapData.forEach(tier => {
     // Filter by tier
     if (currentTierFilter !== "all" && tier.tierId !== currentTierFilter) {
       return;
@@ -374,10 +418,10 @@ function renderRoadmapCurriculum() {
                     <i data-lucide="code" class="w-3.5 h-3.5 text-indigo-400"></i> C++ Implementation / Template
                   </span>
                   <div class="flex items-center gap-2">
-                    <button onclick="copySnippetText(this, \`${escapeForAttr(ch.theory.codeSnippet)}\`)" class="text-slate-400 hover:text-white flex items-center gap-1 transition text-[11px]">
+                    <button onclick="copyChapterCode('${ch.id}', this)" class="text-slate-400 hover:text-white flex items-center gap-1 transition text-[11px]">
                       <i data-lucide="copy" class="w-3 h-3"></i> Copy
                     </button>
-                    <button onclick="loadCodeToStudio(\`${escapeForAttr(ch.theory.codeSnippet)}\`, '${ch.title}')" class="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition text-[11px]">
+                    <button onclick="loadChapterCodeToStudio('${ch.id}')" class="text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition text-[11px]">
                       <i data-lucide="terminal" class="w-3 h-3"></i> Open in Studio
                     </button>
                   </div>
@@ -438,18 +482,18 @@ function renderRoadmapCurriculum() {
 
                         <!-- Quick Hint Button -->
                         ${p.hint ? `
-                          <button onclick="openQuickHintModal('${escapeForAttr(p.title)}', '${escapeForAttr(p.hint)}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition" title="View Quick Hint">
+                          <button onclick="openQuickHintModal('${p.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition" title="View Quick Hint">
                             <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i>
                           </button>
                         ` : ''}
 
                         <!-- Personal Notes Button -->
-                        <button onclick="openProblemNotesModal('${p.id}', '${escapeForAttr(p.title)}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 ${hasNote ? 'text-indigo-400 font-bold' : 'text-slate-400'} transition" title="Personal Notes & Approach">
+                        <button onclick="openProblemNotesModal('${p.id}')" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 ${hasNote ? 'text-indigo-400 font-bold' : 'text-slate-400'} transition" title="Personal Notes & Approach">
                           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                         </button>
 
                         <!-- Load Code Studio Button -->
-                        <button onclick="loadProblemToStudio('${p.id}', '${escapeForAttr(p.title)}', '${p.platform}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-300 text-[11px] font-medium transition flex items-center gap-1" title="Open in Code Studio">
+                        <button onclick="loadProblemToStudio('${p.id}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-indigo-600 hover:text-white text-slate-300 text-[11px] font-medium transition flex items-center gap-1" title="Open in Code Studio">
                           <i data-lucide="code" class="w-3 h-3"></i> Code
                         </button>
                       </div>
@@ -488,6 +532,87 @@ window.toggleChapter = function(chId) {
     currentActiveChapter = chId;
   }
   renderRoadmapCurriculum();
+};
+
+window.copyChapterCode = function(chId, btnEl) {
+  const ch = findChapterById(chId);
+  if (!ch) return;
+  navigator.clipboard.writeText(ch.theory.codeSnippet).then(() => {
+    showToast("Template copied to clipboard! 📋");
+    if (btnEl) {
+      const orig = btnEl.innerHTML;
+      btnEl.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Copied!`;
+      if (window.lucide) window.lucide.createIcons();
+      setTimeout(() => {
+        btnEl.innerHTML = orig;
+        if (window.lucide) window.lucide.createIcons();
+      }, 1800);
+    }
+  });
+};
+
+window.loadChapterCodeToStudio = function(chId) {
+  const ch = findChapterById(chId);
+  if (!ch) return;
+  switchTab("editor");
+  const codeEditor = document.getElementById("code-editor-area");
+  const filenameInput = document.getElementById("push-filename-input");
+  const commitInput = document.getElementById("push-commit-input");
+
+  if (codeEditor) codeEditor.value = ch.theory.codeSnippet;
+  if (filenameInput) {
+    const slug = ch.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    filenameInput.value = `concepts/${slug}.cpp`;
+  }
+  if (commitInput) commitInput.value = `feat: add implementation template for ${ch.title}`;
+  showToast(`Loaded ${ch.title} into Code Studio!`);
+};
+
+window.loadProblemToStudio = function(probId) {
+  const res = findProblemById(probId);
+  if (!res) return;
+  const p = res.problem;
+  switchTab("editor");
+  const codeEditor = document.getElementById("code-editor-area");
+  const filenameInput = document.getElementById("push-filename-input");
+  const commitInput = document.getElementById("push-commit-input");
+
+  const slug = p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const platSlug = p.platform.toLowerCase();
+
+  if (filenameInput) filenameInput.value = `solutions/${platSlug}/${slug}.cpp`;
+  if (commitInput) commitInput.value = `feat: solve ${p.platform} - ${p.title}`;
+
+  if (codeEditor) {
+    codeEditor.value = `// =============================================================================
+// Problem: ${p.title} (${p.platform})
+// Problem ID: ${p.id}
+// Difficulty: ${p.diff}
+// Link: ${p.link}
+// Author: baadaldev
+// =============================================================================
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+void solve() {
+    // Write your solution here
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    solve();
+    return 0;
+}
+`;
+  }
+
+  showToast(`Loaded "${p.title}" into Code Studio!`);
 };
 
 window.launchVisualizerForAlgo = function(algoName) {
@@ -530,13 +655,14 @@ window.toggleProblemStarred = function(probId) {
 function updateGlobalStats() {
   const solvedMap = JSON.parse(localStorage.getItem("cp_solved_problems") || "{}");
   const starredMap = JSON.parse(localStorage.getItem("cp_starred_problems") || "{}");
+  const roadmapData = getRoadmapData();
 
   let totalProblems = 0;
   let totalChapters = 0;
   let completedChapters = 0;
 
-  if (window.CP_ROADMAP_DATA) {
-    CP_ROADMAP_DATA.forEach(tier => {
+  if (roadmapData) {
+    roadmapData.forEach(tier => {
       tier.chapters.forEach(ch => {
         totalChapters++;
         totalProblems += ch.problems.length;
@@ -612,64 +738,6 @@ function setupCodeEditor() {
     });
   }
 }
-
-window.loadCodeToStudio = function(code, title) {
-  switchTab("editor");
-  const codeEditor = document.getElementById("code-editor-area");
-  const filenameInput = document.getElementById("push-filename-input");
-  const commitInput = document.getElementById("push-commit-input");
-
-  if (codeEditor) codeEditor.value = code;
-  if (filenameInput) {
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    filenameInput.value = `concepts/${slug}.cpp`;
-  }
-  if (commitInput) commitInput.value = `feat: add implementation template for ${title}`;
-  showToast(`Loaded ${title} into Code Studio!`);
-};
-
-window.loadProblemToStudio = function(probId, probTitle, platform) {
-  switchTab("editor");
-  const codeEditor = document.getElementById("code-editor-area");
-  const filenameInput = document.getElementById("push-filename-input");
-  const commitInput = document.getElementById("push-commit-input");
-  const langSelect = document.getElementById("editor-lang-select");
-
-  const slug = probTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const platSlug = platform.toLowerCase();
-
-  if (filenameInput) filenameInput.value = `solutions/${platSlug}/${slug}.cpp`;
-  if (commitInput) commitInput.value = `feat: solve ${platform} - ${probTitle}`;
-
-  if (codeEditor) {
-    codeEditor.value = `// =============================================================================
-// Problem: ${probTitle} (${platform})
-// Problem ID: ${probId}
-// Author: baadaldev
-// =============================================================================
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
-
-using namespace std;
-
-void solve() {
-    // Write your solution here
-}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    solve();
-    return 0;
-}
-`;
-  }
-
-  showToast(`Loaded "${probTitle}" into Code Studio!`);
-};
 
 // -----------------------------------------------------------------------------
 // VISUALIZER CONTROLS SETUP
@@ -748,23 +816,26 @@ function setupVisualizerControls() {
 // -----------------------------------------------------------------------------
 function renderPatterns() {
   const container = document.getElementById("patterns-grid");
-  if (!container || !window.CP_PATTERNS_DATA) return;
+  const patternsData = getPatternsData();
+  if (!container || !patternsData || patternsData.length === 0) return;
 
   let html = "";
-  window.CP_PATTERNS_DATA.forEach(pat => {
+  patternsData.forEach(pat => {
     html += `
       <div class="pro-card p-5 rounded-2xl flex flex-col justify-between space-y-4">
         <div>
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">${pat.id}</span>
-            <span class="text-[11px] font-mono text-slate-400">${pat.timeComp}</span>
+            <span class="text-[11px] font-mono text-slate-400">${pat.timeSpace}</span>
           </div>
           <h3 class="text-base font-bold text-white mb-1.5">${pat.name}</h3>
-          <p class="text-xs text-slate-300 leading-relaxed mb-3">${pat.desc}</p>
+          <p class="text-xs text-slate-300 leading-relaxed mb-3">${pat.whenToUse}</p>
           
           <div class="bg-slate-950 p-3 rounded-xl border border-slate-800/80 mb-3">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1">When to Use:</span>
-            <p class="text-xs text-slate-400">${pat.whenToUse}</p>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1">Sample Problems:</span>
+            <div class="flex flex-wrap gap-1">
+              ${pat.sampleProblems.map(sp => `<span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">${sp}</span>`).join('')}
+            </div>
           </div>
         </div>
 
@@ -966,8 +1037,11 @@ function setupModals() {
   }
 }
 
-window.openProblemNotesModal = function(probId, probTitle) {
+window.openProblemNotesModal = function(probId) {
   currentNoteProblemId = probId;
+  const res = findProblemById(probId);
+  const probTitle = res ? res.problem.title : probId;
+
   const modal = document.getElementById("modal-problem-notes");
   const titleEl = document.getElementById("notes-modal-title");
   const textarea = document.getElementById("problem-note-textarea");
@@ -980,13 +1054,17 @@ window.openProblemNotesModal = function(probId, probTitle) {
   if (window.lucide) window.lucide.createIcons();
 };
 
-window.openQuickHintModal = function(probTitle, hintText) {
+window.openQuickHintModal = function(probId) {
+  const res = findProblemById(probId);
+  if (!res) return;
+  const p = res.problem;
+
   const modal = document.getElementById("modal-quick-hint");
   const titleEl = document.getElementById("quick-hint-title");
   const bodyEl = document.getElementById("quick-hint-body");
 
-  if (titleEl) titleEl.innerHTML = `<i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i> Hint: ${escapeHtml(probTitle)}`;
-  if (bodyEl) bodyEl.textContent = hintText;
+  if (titleEl) titleEl.innerHTML = `<i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i> Hint: ${escapeHtml(p.title)}`;
+  if (bodyEl) bodyEl.textContent = p.hint;
 
   if (modal) modal.classList.remove("hidden");
   if (window.lucide) window.lucide.createIcons();

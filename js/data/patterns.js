@@ -1,5 +1,5 @@
 // 14 Core Algorithmic Patterns & Templates
-const CP_PATTERNS_DATA = [
+var CP_PATTERNS_DATA = [
   {
     id: "two-pointers",
     name: "1. Two Pointers",
@@ -165,3 +165,11 @@ while (!q.empty()) {
 return order.size() == n ? order : vector<int>();`
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.CP_PATTERNS_DATA = CP_PATTERNS_DATA;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CP_PATTERNS_DATA };
+}
+

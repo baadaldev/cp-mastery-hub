@@ -3,7 +3,7 @@
 // Concept-First Roadmap inspired by Apna College Alpha & Striver's A2Z DSA Sheet
 // =============================================================================
 
-const CP_ROADMAP_DATA = [
+var CP_ROADMAP_DATA = [
   // ---------------------------------------------------------------------------
   // YEAR 1: FOUNDATIONS & STL MASTERY
   // ---------------------------------------------------------------------------
@@ -958,21 +958,12 @@ int tsp(int mask, int u, int n, const vector<vector<int>>& dist, vector<vector<i
   }
 ];
 
-// Helper functions for roadmap calculations
-function getRoadmapTotalProblems() {
-  let count = 0;
-  CP_ROADMAP_DATA.forEach(tier => {
-    tier.chapters.forEach(ch => {
-      count += ch.problems.length;
-    });
-  });
-  return count;
+if (typeof window !== 'undefined') {
+  window.CP_ROADMAP_DATA = CP_ROADMAP_DATA;
+  window.getRoadmapTotalProblems = getRoadmapTotalProblems;
+  window.getRoadmapTotalChapters = getRoadmapTotalChapters;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CP_ROADMAP_DATA, getRoadmapTotalProblems, getRoadmapTotalChapters };
 }
 
-function getRoadmapTotalChapters() {
-  let count = 0;
-  CP_ROADMAP_DATA.forEach(tier => {
-    count += tier.chapters.length;
-  });
-  return count;
-}
