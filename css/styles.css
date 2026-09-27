@@ -1,0 +1,126 @@
+/* CP Mastery Hub - Modern Cyber-Dark Theme */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #0a0d14;
+  --bg-secondary: #101622;
+  --bg-tertiary: #162032;
+  --border-color: #212e45;
+  --accent-blue: #38bdf8;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: #f1f5f9;
+  overflow-x: hidden;
+}
+
+code, pre, .font-mono {
+  font-family: 'Fira Code', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0d14;
+}
+::-webkit-scrollbar-thumb {
+  background: #212e45;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
+
+/* Glassmorphism & Glow */
+.glass-panel {
+  background: rgba(16, 22, 34, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+}
+
+.glow-blue {
+  box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.25);
+}
+
+.glow-green {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+}
+
+.glow-purple {
+  box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.25);
+}
+
+/* Visualizer Bars */
+.viz-bar {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.viz-bar.active {
+  background: linear-gradient(180deg, #f43f5e 0%, #e11d48 100%) !important;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+  transform: scaleY(1.04);
+}
+
+.viz-bar.comparing {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+.viz-bar.sorted {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%) !important;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+.viz-bar.pointer-left {
+  border-top: 3px solid #38bdf8;
+}
+
+.viz-bar.pointer-right {
+  border-top: 3px solid #ec4899;
+}
+
+/* Pulsing indicators */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
+}
+
+.pulse-live {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* Custom Checkbox */
+.custom-check {
+  appearance: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1.5px solid #3b82f6;
+  border-radius: 4px;
+  background: #0f172a;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  transition: all 0.2s;
+}
+
+.custom-check:checked {
+  background: #3b82f6;
+}
+
+.custom-check:checked::before {
+  content: "";
+  width: 0.65rem;
+  height: 0.65rem;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  background-color: white;
+}

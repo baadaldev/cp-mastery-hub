@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CP Mastery Hub — 3-Year Zero-to-Hero Competitive Programming Suite</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-[#0a0d14] text-slate-100 min-h-screen flex flex-col selection:bg-sky-500/30 selection:text-sky-200">
+
+  <!-- Header / Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 glass-panel">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-sky-500/20">
+          <i data-lucide="terminal" class="w-5 h-5 text-slate-950 font-bold"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-extrabold text-base tracking-wide bg-gradient-to-r from-sky-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">CP MASTERY HUB</h1>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">Zero to Hero</span>
+          </div>
+          <p class="text-[11px] text-slate-400">3-Year University Competitive Programming OS</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
+        <button data-tab="visualizer" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 bg-sky-500/10 text-sky-400 border border-sky-500/30">
+          <i data-lucide="play-circle" class="w-3.5 h-3.5"></i> Visualizer
+        </button>
+        <button data-tab="roadmap" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="map" class="w-3.5 h-3.5"></i> 3-Year Roadmap
+        </button>
+        <button data-tab="editor" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="code-2" class="w-3.5 h-3.5"></i> Code Studio
+        </button>
+        <button data-tab="patterns" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i> 14 Patterns
+        </button>
+        <button data-tab="contests" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Contests
+        </button>
+        <button data-tab="coach" class="nav-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> AI Coach
+        </button>
+      </nav>
+
+      <!-- Right Header Controls -->
+      <div class="flex items-center gap-3">
+        <!-- Progress Counter -->
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs">
+          <span class="text-slate-400">Solved:</span>
+          <span id="stats-solved-count" class="font-mono font-bold text-sky-400">0</span>
+          <span class="text-slate-600">/</span>
+          <span id="stats-total-count" class="font-mono text-slate-400">150</span>
+          <span id="stats-percent" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">0%</span>
+        </div>
+
+        <!-- GitHub Sync Button -->
+        <button id="btn-open-gh-modal" title="GitHub Sync Settings" class="px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-xs text-slate-300 flex items-center gap-1.5 transition">
+          <i data-lucide="github" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden sm:inline">GitHub Sync</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Bottom Tab Bar -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 glass-panel border-t border-slate-800 p-2 flex justify-around">
+    <button data-tab="visualizer" class="nav-tab-btn p-2 rounded-lg text-xs text-slate-400 flex flex-col items-center">
+      <i data-lucide="play-circle" class="w-4 h-4"></i>
+      <span class="text-[10px] mt-0.5">Visualizer</span>
+    </button>
+    <button data-tab="roadmap" class="nav-tab-btn p-2 rounded-lg text-xs text-slate-400 flex flex-col items-center">
+      <i data-lucide="map" class="w-4 h-4"></i>
+      <span class="text-[10px] mt-0.5">Roadmap</span>
+    </button>
+    <button data-tab="editor" class="nav-tab-btn p-2 rounded-lg text-xs text-slate-400 flex flex-col items-center">
+      <i data-lucide="code-2" class="w-4 h-4"></i>
+      <span class="text-[10px] mt-0.5">Code</span>
+    </button>
+    <button data-tab="patterns" class="nav-tab-btn p-2 rounded-lg text-xs text-slate-400 flex flex-col items-center">
+      <i data-lucide="layers" class="w-4 h-4"></i>
+      <span class="text-[10px] mt-0.5">Patterns</span>
+    </button>
+    <button data-tab="contests" class="nav-tab-btn p-2 rounded-lg text-xs text-slate-400 flex flex-col items-center">
+      <i data-lucide="calendar" class="w-4 h-4"></i>
+      <span class="text-[10px] mt-0.5">Contests</span>
+    </button>
+  </div>
+
+  <!-- Main Content Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 mb-16 md:mb-6">
+
+    <!-- ============================================== -->
+    <!-- TAB 1: ALGORITHM & CODE VISUALIZER             -->
+    <!-- ============================================== -->
+    <section id="tab-visualizer" class="tab-panel">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-3">
+        <div>
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-5 h-5 text-sky-400"></i> Interactive Algorithm Visualizer Studio
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Watch algorithms execute step-by-step with state changes, active pointers, and intuitive animations.</p>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Algorithm Selector -->
+          <select id="viz-algo-select" class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:border-sky-500">
+            <option value="bubblesort">Bubble Sort (O(n²))</option>
+            <option value="selectionsort">Selection Sort (O(n²))</option>
+            <option value="insertionsort">Insertion Sort (O(n²))</option>
+            <option value="binarysearch">Binary Search (O(log n))</option>
+            <option value="twopointers">Two Pointers (Target Sum O(n))</option>
+          </select>
+
+          <!-- Action Buttons -->
+          <button id="btn-step-prev" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Step Back">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-play-pause" class="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="play" class="w-4 h-4"></i> Run
+          </button>
+          <button id="btn-step-next" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition" title="Step Forward">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-viz-reset" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs flex items-center gap-1 transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Randomize
+          </button>
+
+          <!-- Speed Slider -->
+          <div class="flex items-center gap-2 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
+            <span class="text-[10px] text-slate-400 font-mono">Speed</span>
+            <input type="range" id="viz-speed-slider" min="100" max="900" value="600" class="w-20 accent-sky-400 cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas / Bar Visualizer Box -->
+      <div id="visualizer-container" class="w-full mb-4">
+        <!-- Rendered dynamically by js/visualizer.js -->
+      </div>
+
+      <!-- Execution Log & Status Card -->
+      <div class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></div>
+          <div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Step Execution Inspector</div>
+            <div id="viz-step-log" class="text-sm font-medium text-slate-200 mt-0.5">Initializing algorithm visualizer...</div>
+          </div>
+        </div>
+        <div id="viz-step-counter" class="text-xs font-mono px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400">
+          Step 1 of 1
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 2: 3-YEAR CP ROADMAP                       -->
+    <!-- ============================================== -->
+    <section id="tab-roadmap" class="tab-panel hidden">
+      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i data-lucide="map" class="w-5 h-5 text-emerald-400"></i> 3-Year University Competitive Programming Roadmap
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Structured from beginner fundamentals to candidate master level. Check off solved problems as you conquer them!</p>
+        </div>
+        <div class="text-xs font-mono px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          Auto-saved to Local Storage
+        </div>
+      </div>
+
+      <!-- Roadmap Dynamic Cards Container -->
+      <div id="roadmap-container">
+        <!-- Rendered by js/data/roadmap.js -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 3: CODE STUDIO & GITHUB PUSH               -->
+    <!-- ============================================== -->
+    <section id="tab-editor" class="tab-panel hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+        <div>
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i data-lucide="code-2" class="w-5 h-5 text-cyan-400"></i> Code Studio & 1-Click GitHub Sync
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Write clean CP solutions with Fast I/O templates and push directly to your GitHub repository in 1 click.</p>
+        </div>
+
+        <!-- Language Selector & Push Button -->
+        <div class="flex items-center gap-2">
+          <select id="editor-lang-select" class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:border-cyan-500">
+            <option value="cpp">C++ (C++17 / Fast I/O)</option>
+            <option value="c">C (Standard C99)</option>
+            <option value="python">Python 3</option>
+          </select>
+          <button id="btn-push-to-github" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-lg shadow-emerald-500/20">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Push to GitHub
+          </button>
+        </div>
+      </div>
+
+      <!-- Commit Metadata Bar -->
+      <div class="glass-panel p-3 rounded-xl border border-slate-800 mb-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Target File Path in Repository</label>
+          <input type="text" id="push-filename-input" value="solutions/01-two-sum.cpp" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-sky-300 font-mono focus:outline-none focus:border-sky-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Commit Message</label>
+          <input type="text" id="push-commit-input" value="feat: add optimal O(N) Two Sum solution" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500">
+        </div>
+      </div>
+
+      <!-- Code Area -->
+      <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+        <div class="bg-slate-950 px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+            <span class="text-xs font-mono text-slate-400 ml-2">solution_editor</span>
+          </div>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('code-editor-area').value); showToast('Code copied to clipboard! 📋');" class="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 font-mono">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Code
+          </button>
+        </div>
+        <textarea id="code-editor-area" rows="18" class="w-full p-4 bg-[#070a10] text-sky-100 font-mono text-xs leading-relaxed focus:outline-none resize-y"></textarea>
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 4: 14 PATTERNS HANDBOOK                    -->
+    <!-- ============================================== -->
+    <section id="tab-patterns" class="tab-panel hidden">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <i data-lucide="layers" class="w-5 h-5 text-purple-400"></i> The 14 Core Algorithmic Patterns
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">Master these 14 patterns to solve over 90% of interview and competitive programming problems without memorizing code.</p>
+      </div>
+
+      <!-- Patterns Container -->
+      <div id="patterns-container">
+        <!-- Rendered by js/data/patterns.js -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 5: LIVE CONTEST RADAR                      -->
+    <!-- ============================================== -->
+    <section id="tab-contests" class="tab-panel hidden">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-bold flex items-center gap-2">
+            <i data-lucide="calendar" class="w-5 h-5 text-rose-400"></i> Live & Upcoming Contest Radar
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Direct countdowns and registration links for Codeforces, LeetCode, CodeChef, and AtCoder.</p>
+        </div>
+        <button onclick="window.contestRadar.fetchContests();" class="text-xs bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh
+        </button>
+      </div>
+
+      <!-- Contests Container -->
+      <div id="contests-list-container">
+        <!-- Rendered by js/contests.js -->
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 6: SOCRATIC AI HINT COACH                  -->
+    <!-- ============================================== -->
+    <section id="tab-coach" class="tab-panel hidden">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i> Socratic Problem-Solving Coach
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">Get progressive hints without having the full solution spoiled. Train your intuition like a grandmaster.</p>
+      </div>
+
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-3xl mx-auto">
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-400 animate-ping"></span>
+            <span class="text-xs font-mono font-bold text-amber-300">PROGRESSIVE HINT SYSTEM</span>
+          </div>
+          <button id="btn-reset-hint" class="text-xs text-slate-400 hover:text-slate-200">Reset Hints</button>
+        </div>
+
+        <div id="hint-display-box" class="min-h-[140px] flex items-center">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-800 flex justify-end">
+          <button id="btn-next-hint" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition">
+            Unlock Next Hint ➔
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- GitHub Sync Settings Modal -->
+  <div id="gh-settings-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-panel p-6 rounded-2xl border border-slate-700 max-w-md w-full shadow-2xl animate-in fade-in duration-200">
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+        <h3 class="font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="github" class="w-5 h-5 text-emerald-400"></i> GitHub Auto-Sync Settings
+        </h3>
+        <button id="btn-close-gh-modal" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">GitHub Personal Access Token (PAT)</label>
+          <input type="password" id="gh-pat-input" placeholder="ghp_..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-sky-500">
+          <p class="text-[11px] text-slate-500 mt-1">Requires 'repo' scope to commit solutions to your GitHub account.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Target Repository Name</label>
+          <input type="text" id="gh-repo-input" value="competitive-programming" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-sky-400 font-mono focus:outline-none focus:border-sky-500">
+          <p class="text-[11px] text-slate-500 mt-1">If the repository doesn't exist, it will be automatically created on your account!</p>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+          <button id="btn-save-gh-settings" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs transition">
+            Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data/roadmap.js"></script>
+  <script src="js/data/patterns.js"></script>
+  <script src="js/visualizer.js"></script>
+  <script src="js/github-sync.js"></script>
+  <script src="js/contests.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
