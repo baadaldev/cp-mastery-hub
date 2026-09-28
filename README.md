@@ -8,6 +8,16 @@
   <img src="https://img.shields.io/badge/Maintained_by-baadaldev-EF4444?style=for-the-badge&logo=github&logoColor=white" alt="Maintained by baadaldev" />
 </p>
 
+<p align="center">
+  <a href="https://github.com/topics/competitive-programming"><img src="https://img.shields.io/badge/topic-competitive--programming-0284c7?style=flat-square" alt="competitive-programming" /></a>
+  <a href="https://github.com/topics/dsa"><img src="https://img.shields.io/badge/topic-dsa-10b981?style=flat-square" alt="dsa" /></a>
+  <a href="https://github.com/topics/algorithms"><img src="https://img.shields.io/badge/topic-algorithms-8b5cf6?style=flat-square" alt="algorithms" /></a>
+  <a href="https://github.com/topics/data-structures"><img src="https://img.shields.io/badge/topic-data--structures-ec4899?style=flat-square" alt="data-structures" /></a>
+  <a href="https://github.com/topics/c-plus-plus"><img src="https://img.shields.io/badge/topic-c++++-00599C?style=flat-square&logo=c%2B%2B&logoColor=white" alt="c-plus-plus" /></a>
+  <a href="https://github.com/topics/codeforces"><img src="https://img.shields.io/badge/topic-codeforces-1F8ACB?style=flat-square&logo=codeforces&logoColor=white" alt="codeforces" /></a>
+  <a href="https://github.com/topics/leetcode"><img src="https://img.shields.io/badge/topic-leetcode-FFA116?style=flat-square&logo=leetcode&logoColor=black" alt="leetcode" /></a>
+</p>
+
 ---
 
 ## 🌟 Live Demo
