@@ -131,3 +131,5 @@ This project is licensed under the [MIT License](LICENSE).
 ## 🤝 Contributing & Community
 Contributions and pull requests are always welcome to expand our algorithm visualizers and CP guides!
 ##
+This is for my competetive programming journey
+
